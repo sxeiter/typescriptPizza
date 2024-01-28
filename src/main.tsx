@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import { RouterProvider, createBrowserRouter, defer } from 'react-router-dom';
 import { Cart } from './Pages/Cart/Cart.tsx';
-import { Menu } from './Pages/Menu/Menu.tsx';
 import { Error } from './Pages/Error/Error.tsx';
 import { Layout } from './layout/Layout/Layout.tsx';
 import { Product } from './Pages/Product/Product.tsx';
+import axios from 'axios';
+import { PREFIX } from './helpers/API.ts';
+
+const Menu = lazy(() => import('./Pages/Menu/Menu.tsx'));
 
 const router = createBrowserRouter([
 	{
@@ -15,7 +18,7 @@ const router = createBrowserRouter([
 		children: [
 			{
 				path: '/',
-				element: <Menu />
+				element: <Suspense fallback={<>Загрузка...</>}><Menu /></Suspense>
 			},
 			{
 				path: '/cart',
@@ -23,7 +26,16 @@ const router = createBrowserRouter([
 			},
 			{
 				path: '/product/:id',
-				element: <Product />
+				element: <Product />,
+				errorElement: <>Ошибка</>,
+				loader: async ({params}) => {
+					return defer({
+						data: axios.get(`${PREFIX}/products/${params.id}`).then(data => data)
+					});
+
+					// const {data} = await axios.get(`${PREFIX}/products/${params.id}`);
+					// return data;
+				}
 			}
 		]
 

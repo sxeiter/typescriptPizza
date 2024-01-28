@@ -8,7 +8,7 @@
   background: white;
   border-radius: 19px;
   box-shadow: 18.214px 18.214px 36.429px 0px rgba(211, 209, 216, 0.25);
-  min-width: 320px;
+  max-width: 320px;
 }
 
 .footer {
